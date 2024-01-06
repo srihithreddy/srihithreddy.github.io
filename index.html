@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Words of the Unspoken</title>
+    <style>
+        body {
+            font-family: Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #001e3e;
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 36px;
+        }
+
+        main {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 60px;
+            background-color: #fff;
+            border-radius: 5px;
+        }
+
+        p {
+            font-size: 18px;
+            line-height: 1.6;
+        }
+
+        .project-description {
+            margin-top: 20px;
+        }
+
+        footer {
+            text-align: center;
+            background-color: #001e3e;
+            color: #fff;
+            padding: 10px;
+        }
+
+        .subheading {
+            margin-top: 0px;
+            margin-bottom: 0px;
+            font-weight: 100;
+        }
+
+        .heading {
+            margin-bottom: 3px;
+        }
+
+        .view-on-git {
+            padding: 15px 20px;
+            border-radius: 2px;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            transition: 0.4s ease-in-out;
+            margin-top: 0px;
+        }
+
+        .view-on-git:hover {
+            padding: 15px 30px;
+            border-radius: 5px;
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        td, th {
+            border: 1px solid lightgray;
+            text-align: left;
+            padding: 7px;
+        }
+
+        tr:nth-child(even) {
+            background-color: lightgray;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1 class="heading">Words of the Unspoken</h1>
+        <h5 class="subheading">Team 50 | Machine Learning for ASL Alphabet Recognition</h5>
+        <h5 style="margin-top: 5px; margin-bottom: 20px; font-weight: 100;">Anna Sterzer | Huaijin Tu | Srihith Pallamreddy | Zelda Lipschutz | Lan Lan</h5>
+        <!--<button type="button" class="view-on-git" disabled>View on GitHub</button>-->
+    </header>
+
+    <main>
+        <h2>Introduction & Background</h2>
+        <p class="project-description">
+            American Sign Language (ASL) is a widely used visual language in North America, substantially facilitating communication within the Deaf community. 
+            With technological advancement, there has been a growing interest in developing machine learning models to recognize ASL signs. <br><br>
+            Recent studies have explored various machine-learning techniques for ASL recognition. For instance, Fatmi et al. (2019) demonstrated that using 
+            Artificial Neural Networks (ANN) provides a higher accuracy in recognizing ASL words compared to other machine learning techniques [2]. Another study by Fierro-Radilla et al. 
+            (2021) applied a siamese network architecture to the ASL alphabet dataset and achieved results that outperformed previous works [3]. 
+            These studies highlight the potential of machine learning in enhancing ASL recognition.
+        </p>
+
+        <!-- Other tingz -->
+        <h2>Dataset</h2>
+        <p class="dataset-description">
+            This <a href="https://public.roboflow.com/object-detection/american-sign-language-letters" target="_blank">dataset</a> comprises 1728 RGB images, each with a resolution of approximately 
+            400x400 pixels. These images are manually labeled with all 26 letters of the ASL alphabet, 
+            ranging from A to Z. To facilitate object detection, the dataset is also equipped with bounding box annotations in COCO (Common Objects in Context) format, including both 
+            label and bounding box location. [1]
+        </p>
+
+        <h2>Problem Definition</h2>
+        <p class="problem-definition">
+            This project aims to build an accurate, robust, and efficient machine learning model to detect ASL letters from gesture images, bridging the communication gap between ASL 
+            and non-ASL users and making virtual meetings more inclusive to the Deaf community.
+        </p>
+
+        <h2>Methods</h2>
+
+        <h3>Explanatory Data Analysis</h3>
+        Instances per class: no data imbalance<br>To understand the distribution and characteristics of the dataset used for hand gesture recognition, we conducted exploratory data 
+            analysis (EDA); the EDA consisted of the following visual techniques.<br>
+
+            <img src="images/img6.jpeg" alt="instances" width="300" height="300">
+            <img src="images/img7.jpeg" alt="instances" width="300" height="300">
+            <ol>
+                <li>Class Distribution Bar Chart: a multicolor bar was created to visualize the distribution of instances across different classes (letters). Each bar represents a class 
+                    label, and the height indicates its number of instances. We found no imbalance of class distribution.
+                    <!-- <br><br> -->
+                    <!-- <img src="images/img6.jpeg" alt="instances" width="500" height="500"> -->
+                    <!-- <br><br> -->
+                </li>
+                <li>Bounding box Distribution Plot: the superimposed bounding box plot was generated to visualize the variability of the bounding box dimensions and positions. Each 
+                    rectangle represents a bounding box for a hand gesture in the dataset. We found no imbalance in bounding box distribution.
+                    <!-- <br><br> -->
+                    <!-- <img src="images/img7.jpeg" alt="instances" width="500" height="500"> -->
+                    <!-- <br><br> -->
+                </li>
+                <li>Visualization of ground-truth bounding box and label together with the image<br>
+                    <img src="images/img9.jpeg" alt="instances" width="300" height="300">
+                </li>
+            </ol>
+            
+        <br>
+        We first fine-tuned Hugging Face’s DETR - DEtection TRansformer (object detection). After about 3 hours of training, the results were not promising, so we first 
+        implemented a Keras Sequential CNN (image classification) and then fine-tuned Yolov5m (object detection), which both had much more promising results.
+        
+        <h2>Keras Sequential CNN</h2>
+        <p class="Keras-Sequential-CNN">
+        <h3>Keras Sequential CNN Overview</h3>
+        What is a sequential model? A sequential model is a linear stack of layers which allows model creation layer-by-layer where each layer has one input tensor and one output 
+        tensor. Basically, sequential models are like trains, where each train car (layer) follows right after the other and the passengers are the data. Each train car/layer has
+         a specific job (ex: processing information). A CNN is a deep learning algorithm that can take in an input image, assign importance (with weights and biases) to aspects of the image.
+        <br>
+        We used the Keras system for the Sequential CNN for image classification. It’s worth noting that this is not an entire approach in-and-of-itself, but rather a start to a 
+        second approach (two-staged CNN-based object detector) we will complete before the final submission. Although the problem description states that our project is object 
+        detection, this is our attempt at ensemble learning to achieve exactly that, where we will pair object detection with image classification in hopes of higher accuracy rates.
+        <br>
+        This will work as follows:
+        <ol>
+            <li>First, we will pass in data into an object detection system (which will be a DETR model fine-tuned for ASL letter detection).</li>
+            <li>Next, each of the detected bounding boxes (after filtering by confidence rates), will be cropped and passed into this Keras Sequential image classification model to 
+                    determine what letter is ultimately being passed in.</li>
+        </ol>
+
+        In theory, since there could be more than one bounding boxes, the outputs of the object detection algorithm can be taken (and augmented if necessary) and passed into the image 
+        classification algorithm to get a more comprehensive prediction. In other words, this allows us to complete the task of object detection using ensemble learning (which in this 
+        case pairs the concepts of object detection and image classification).
+        <br>
+        <h3>Preprocessing for Keras Sequential CNN</h3>
+        To create this Keras Sequential model, we first augmented the data - using various approaches including image resizing (to 180 x 180), random rotation, random horizontal flips, 
+        and random zoom. Example augmentations can be seen in the image below. This was done to ensure the model could understand various orientations. We also normalized the pixel 
+        values of the image to bring values from the range of 0 to 255 to the range of 0 to 1.
+        <br>
+        <img src="images/img1.jpeg" alt="augmentation" width="500" height="500">
+            
+        <h3>Results & Discussion for Keras Sequential CNN</h3>
+        After preprocessing the data, we utilized Keras to train the sequential model, tuning parameters like dropout rate to prevent overfitting, max pooling (reduces height and width 
+        of input volume for next layer) to reduce computational complexity and extract dominant features, and dense layers (interpret the features extracted by the preceding layers to make a final prediction).
+        <br>
+        The results of training and testing the model can be seen in the figures below, which indicate the accuracy and loss per epoch. Notably, the validation accuracy and loss seem to 
+        plateau much quicker than the training alternative, at around 20 epochs. Ultimately, the training accuracy ended up being around 95%, while the validation accuracy was closer to 65%. 
+        However, we achieved an accuracy rate of 0.75 or 75% when testing on real data.
+        <br>
+        <img src="images/img5.jpeg" alt="accuracy" width="500" height="333">
+        
+        <h3>Optimization</h3>
+        The Keras Sequential model was further optimized, and the optimal configuration was found to be similar to the previous configuration but with a few changes to prevent overfitting. 
+        These changes included an increase in the dropout rate, which is a rate set to disregard nodes (each node has a dropout rate chance of being disregarded). This allows us to reduce codependence, 
+        which therefore allows us to reduce overfitting. This was increased by a factor of 0.1. Then, we also added more image augmentation techniques including random applications of contrast changes 
+        with a factor of 0.2. Along with this, we increased the factors of rotation augmentation and scale augmentation from 0.1 to 0.2, and observed a reduction in overfitting. 
+        A batch size reduction also helped towards the cause. <br>
+        However, because of the augmentation and dropout rate, we had to increase the number of epochs to maximally increase the training and validation accuracy. Initially, 60 epochs were used, 
+        but 120 was found to be ideal for the new parameters. <br>
+        After these modifications, we observed a rather significant change in accuracy. In the initial attempt (as in the Midterm Report), we observed a 95% train accuracy, a 65% validation accuracy, 
+        and a 75% accuracy when tested on external data. In the new attempt, we observed a 94% train accuracy, 79% validation accuracy, and a 84% accuracy when testing on external data, which is significant 
+        growth. We also noticed that it was able to be more generalized. Previously, we were not able to get accurate results when we introduced data that was significantly different from the data it 
+        had been trained from. For example, it was able to accurately classify the below image as it is very similar to the data that it had been trained on:<br>
+        <img src="images/img16.png" alt="similar" width="500" height="333"><br>
+        However, it was not able to accurately classify this image as this was completely different from the training set: <br>
+        <img src="images/img17.png" alt="different" width="500" height="333"><br>
+        However, with the modified model, although it was not perfect with data outside the norm of what it was trained on, 
+        it was significantly better than the previous version at classifying images like the second one above. In fact, it was able to correctly classify that particular image.<br>
+        In addition, this model was then paired with object detection to serve as a two-stage CNN-based object detector. In other words, the object detector (YOLO) has created a set of 
+        bounding boxes for each image where the ASL letter is. This bounding box’s contents are then extracted and resized to (180, 180) to pass through the image classification model. 
+        Examples of these images after being trimmed but before being resized are as follows: <br>
+        <img src="images/img18.1.png" alt="image" width="500" height="333"> <img src="images/img18.2.png" alt="image" width="500" height="333"> <br>
+        In a test set of 16 images passed through the YOLO model and then the Sequential Model, we found that the Sequential model concurred with the object detection model in 12/16 
+        instances, giving it a relative accuracy of 75%.
+        </p>
+
+        <h2>YOLO</h2>
+        <p class="YOLO">
+        <h3>YOLOv5 Model Overview:</h3>
+        After trying to build and train a CNN classifier from scratch, we also experimented with fine-tuning a state-of-the-art large pre-trained object detection model on our own dataset - 
+        YOLOv5 model (YOU ONLY LOOK Once, version 5).<br>
+        YOLOv5 uses one-stage object detection, using a single neural network pass to predict bounding boxes and class probabilities directly from full images in one evaluation. It utilizes 
+        CSPDarknet53 as its backbone network, PANet for feature fusion, and a custom detection head. YOLOv5 is also highly efficient in both training and inference, making it well-suited for 
+        real-time applications, and has achieved very good performance on benchmark datasets, such as COCO.
+        <br>
+        <!-- YOLOv5 introduces various improvements over its predecessors, including a streamlined architecture with smaller (pruned) models (YOLOv5s, YOLOv5m, …, up to YOLOv5x) for different 
+        trade-offs between speed vs accuracy. We chose pre-trained YOLOv5m (medium) with 21.2 million parameters to capture the sweet spot between speed (training and inference) and accuracy. 
+        It generally offers better performance than YOLOv5n and YOLOv5s while remaining computationally efficient (fast training and lower memory pressure). -->
+        YOLOv5 introduces various improvements over its predecessors, including a streamlined architecture with smaller (pruned) models, with sizes ranging from nano to extra-large. Each of 
+        these five models have different trade-offs between speed and accuracy, with the smaller ones being the fastest.
+        <br>
+        Additionally, YOLOv5 models of all sizes are available in both P5 (the original) and P6 architectures. P5 models have three output layers, with strides of 8, 16, and 32, respectively. 
+        P6 adds an additional P6/64 stride output layer, meaning that it is better suited for higher resolution images. A final 6 indicates that the P6 model is being used (e.g. YOLOv5m6).
+        <br>
+        Because our resolution is 400x400, we initially chose YOLOv5m (the P5 architecture in a medium size), which provides a good balance between speed and accuracy and is considered the 
+        best-suited for most datasets. It generally offers better performance than YOLOv5n and YOLOv5s while remaining computationally efficient (fast training and lower memory pressure).
+        <br>
+        The model was trained over 120 epochs, starting from pre-trained weights on a large dataset (COCO) - ‘yolov5m.pt’. Initial learning rate was set to 0.01. Batch size was set to 16.
+        <!-- <br>Our model was trained over 120 epochs, starting from pre-trained weights on a large dataset (COCO) - ‘yolov5m.pt’. Initial learning rate was set to 0.01. Batch size was set to 16. -->
+        <h3>Preprocessing</h3>
+        <!-- To enhance the model’s generalization capabilities and reduce overfitting, we implemented data augmentation with the following techniques to introduce variations in the training 
+        dataset, which can simulate conditions the model can encounter in real-life practice. -->
+        To enhance the model’s generalization capabilities and reduce overfitting, we implemented data augmentation with the following techniques to introduce variations in the training dataset, 
+        which can simulate conditions the model can encounter in real-life practice.
+        <ol>
+                <li>Horizontal Flips: creating mirroring images for the hand simulates variation in the hand orientation</li>
+                <li> Crop up to 20%: this helps the model recognize hand gestures from partial views</li>
+                <li>Rotation between -5 degrees to +5 degrees: this helps the model learn variation in hand angles</li>
+                <li>Shear: horizontal ± 5 degrees; vertical ± 5 degrees: as shearing distorts the image, this helps the model learn different perspective and angle changes</li>
+                <li>Grayscale: add 10% grayscale images to the training set: this can help the model recognize hand gestures without relying on color information</li>
+                <li>Brightness: between -25% to +25%: this helps the model to be robust by mimicking different lighting conditions</li>
+                <li>Blur: Random Gaussian blur up to 3 pixels: this helps the model to be robust by mimicking focus variation and motion blur</li>
+        </ol>
+        <h3>Results & Discussion for YOLOv5m Model</h3>
+        <h4>Statistics During Training</h4>
+        <!-- During training, we calculated and monitored how mean average precision (mAP) changes over training epochs. mAP measures the YOLO model’s ability to identify an object 
+        and its location accurately in terms of bounding box information. The mAP is calculated by averaging the precision for each class and then taking the average of these 
+        averages across 26 classes. We assessed mAP at different Intersection over Union (IoU) thresholds, ranging from 0.5 to 0.95. IoU, a standard metric in object detection 
+        tasks, measures the overlap between the predicted bounding box and the ground truth, with 1 indicating perfect overlap and 0 indicating no overlap. An IoU of 0.5, 
+        representing 50% accuracy, is commonly used as the minimum standard for bounding boxes, while an IoU of 0.95 represents a stringent standard, indicating near-perfect 95% accuracy. -->
+        During training, we calculated and monitored how mean average precision (mAP) changes over training epochs. mAP measures the YOLO model’s ability to identify an object and its 
+        location accurately in terms of bounding box information. The mAP is calculated by averaging the precision for each class and then taking the average of these averages across 
+        26 classes. We assessed mAP at different Intersection over Union (IoU) thresholds, ranging from 0.5 to 0.95. IoU, a standard metric in object detection tasks, measures the 
+        overlap between the predicted bounding box and the ground truth, with 1 indicating perfect overlap and 0 indicating no overlap. An IoU of 0.5, representing 50% accuracy, is 
+        commonly used as the minimum standard for bounding boxes, while an IoU of 0.95 represents a stringent standard, indicating near-perfect 95% accuracy.
+        <br>
+        The below figure displays these results. The left part of the figure illustrates the average IoU across thresholds from 0.5 to 0.95, while the right part shows results specifically at the IoU 
+        threshold of 0.5. Our results demonstrate high mAP values both for mAP from 0.5 to 0.95, which approximates a value of 0.8 after 50 epochs, and for mAP at 0.5, approximating 
+        a value of 1 after 25 epochs. This indicates the model's effectiveness in accurately identifying hand gestures and their locations.
+        <br>
+        We can observe that mAP begins to hit a plateau after approximately 50 epochs.
+        <br>
+        <!-- <br>The below figure displays these results. The left part of the figure illustrates the average IoU across thresholds from 0.5 to 0.95, while the right part shows results specifically 
+        at the IoU threshold of 0.5. Our results demonstrate high mAP values both for mAP from 0.5 to 0.95], which approximates a value of 0.8 after 50 epochs, and for mAP at 0.5, 
+        approximating a value of 1 after 25 epochs. This indicates the model's effectiveness in accurately identifying hand gestures and their locations. -->
+        <img src="images/img10.jpeg" alt="accuracy" width="500" height="300"><br>
+        <h4>Statistics For Held-Out Test Set</h4>
+        <!-- For a held-out test dataset with 144 images, we calculated the precision, recall and F-1 score for all classes from A to Z. The average F1 score is 0.882. The high-performing 
+        classes and the problematic classes are analyzed as follows. -->
+        For a held-out test dataset with 144 images, we calculated the precision, recall and F-1 score for all classes from A to Z. The average F1 score is 0.882. The high-performing 
+        classes and the problematic classes are analyzed as follows. 
+        <h4>High Performering Classes</h4>
+        Classes B, D, E, F, H, J, Q, S, U, W, and Z all have high precision and recall, leading to high F1 scores. This suggests that the model performs very well for these classes 
+        with both a low false positive and low false negative rate.
+        <h4>Problematic Classes</h4>
+        Class I has notably low recall at 0.5, suggesting that the model misses half of the actual 'I' gestures, leading to a low F1 score of 0.61.<br>
+        Class N has a precision of 0.64, indicating a relatively high false positive rate, with an F1 score of 0.69, which is suboptimal compared to other classes.<br>
+        Class T also shows a lower recall of 0.67, suggesting the model fails to identify one-third of 'T' gestures.<br>
+        Class V has both low precision and recall, indicating both false positives and false negatives are relatively high, leading to the second-lowest F1 score of 0.67.<br>
+        Class X has the lowest precision at 0.42 but has a perfect recall. This suggests the model never misses X but it often mistakes other gestures as X.<br>
+        <br><img src="images/img11.jpeg" alt="results" width="200" height="500"><img src="images/img12.jpeg" alt="results" width="500" height="350"><br>
+        <h4>Confusion Matrix</h4>
+        To further examine how the model may make mistakes and how it may confuse one letter with another, we also plotted the confusion matrix shown below:<br>
+        <img src="images/img4.jpeg" alt="Confusion Matrix" width="500" height="500">
+        <!-- Confusion matrix demonstrates the relationship between predicted labels and actual labels. While most classes achieve high prediction accuracy, we observed 
+        that the model occasionally predicts letters against the background, indicating false positives. Additionally, it is evident that the model struggles to 
+        differentiate between the letters M and N. Both letters have the lowest accuracies (75%), with a 25% chance that the model confuses one for the other. This 
+        suggests that the model might have difficulties distinguishing letters that are similar in appearance. See below for the illustration of letters M and N in standard ASL gestures. -->
+        The confusion matrix demonstrates the relationship between predicted labels and actual labels. While most classes achieve high prediction accuracy, we observed 
+        that the model occasionally predicts letters against the background, indicating false positives. Additionally, it is evident that the model struggles to 
+        differentiate between the letters M and N. Both letters have the lowest accuracies (75%), with a 25% chance that the model confuses one for the other. This 
+        suggests that the model might have difficulties distinguishing letters that are similar in appearance. See below for the illustration of the letters M 
+        and N in standard ASL gestures.
+        <!-- <br><img src="images/img4.jpeg" alt="results" width="500" height="500"><br> -->
+        <img src="images/img13.jpeg" alt="results" width="100" height="100">
+        <h4>Ground-Truth vs Predicted Label and Bounding Box</h4>
+        After viewing the statistics, we now want to see how the ground truth vs prediction look like. We visualize the ground-truth labels and bounding boxes, as well as the predicted ones.
+        <br>
+        YOLOv5m has excellent performance in predicting the bounding box (finding the hand in image). However, it is also indeed prone to confuse letter M with letter N like the above. 
+        It also confuses letter K with letter V as shown in the standard ASL gestures below.
+        <br><img src="images/img14.jpeg" alt="results" width="100" height="100">
+        <br><img src="images/img8.jpeg" alt="results" width="500" height="500"><br>
+        <br><img src="images/img15.jpeg" alt="results" width="500" height="500">
+        <h4>Comparison Between YOLOv5 Models</h4>
+        The extensive analysis displayed above is solely for YOLOv5m, but in order to determine the optimal model and identify weak classes, we continued to fine-tune 
+        several other versions of YOLOv5: m6, l, l6, x, and x6. The F-1 scores for each class across all tested models are displayed below:
+        <br><img src="images/img19.png" alt="F-1 Scores" width="500" height="500"><br>
+        At a glance, certain letters can be seen to have substantially lower average F-1 scores, namely ‘I’, ‘M’, ‘N’, and ‘Q’. The results of ‘N’ are quite informative, 
+        as the medium models perform significantly worse (F-1 score of around 0.3) than the extra-large models. Notably, YOLOv5x6 performs extremely well on this particular 
+        class, which all other models struggle on. However, this model does not perform consistently better than others, which can be seen in letters such as ‘M’, where YOLOv5l6 performs the best.
+        <br><img src="images/img20.png" alt="Weighted F-1 Scores" width="500" height="500"><br>
+        The above figure displays the average F-1 score for each model, weighted by class frequency. Although they are all very similar, x6 is the only one to reach above 0.9, 
+        and can thus be considered the best model. This is the most complex model, so this result is expected, but it is also the slowest, which has to be taken into consideration as well.
+        
+        <h4>Data Augmentation and Results</h4>
+        The letters ‘B’, 'I', 'K', 'M', 'N', 'O', 'Q', and 'T' have been identified as weak across all models, each displaying an F-1 score lower than 0.7 in at least one model. To address 
+        this, we implemented two different data augmentation methods. <br>
+        The first method is to augment training data specifically for those identified weak letters, including a combination of simple duplication, random brightness adjustments ranging from -15% to 15%, 
+        and blurring up to 5 pixels. These techniques are applied randomly to increase the instances of weak class letters by threefold. 
+        <br>The second method employed is Test-Time Augmentation (TTA). TTA involves creating augmented versions of images in the test set through methods like zooming, flipping, and shifting. The model then makes separate predictions for each 
+        augmented image. The final prediction is an ensemble of these individual predictions, which is expected to yield greater accuracy than a prediction based on a single image. 
+        <br><img src="images/img21.png" alt="Weak Cases" width="500" height="500">
+        <br><img src="images/img22.png" alt="All Cases" width="500" height="500"><br>
+        The first figure shows the weighted F-1 scores for weak cases for each model with the original data and the augmented data. Figure 16 shows the weighted F-1 scores for all cases. 
+        The general trend is that both data augmentation strategies are more beneficial for small, medium, and large models, and become more detrimental for the extra-large models.
+        <br>
+        
+        We observed that v5x6, the largest model, originally yields the highest F-1 score (0.90), but this score decreases after data augmentation. Larger models have more parameters and 
+        are capable of learning more complex features. However, this complexity can be a double-edged sword as it makes them more prone to overfitting, especially if the training data 
+        (including augmented data) does not perfectly represent the variability in the real world. In addition, larger models might learn to rely on specific features that could be 
+        distorted or lost in the augmentation process, leading to decreased performance.
+        <br>
+        In contrast, the medium-sized model, v5m, yields the highest F-1 score after training data augmentation and TTA (F1 score of 0.92). This model seems to strike a balance between size 
+        and complexity. It's large enough to capture a wide range of features but not so large that it becomes prone to overfitting on the augmented data. This balance can make it more 
+        adaptable to variations introduced through TTA, leading to better generalization on the test dataset.
+        <br>
+        Specifically, TTA appears to be a good data augmentation strategy. The average F-1 score increased for all models except v5x6 and v5x, which decreased marginally. The greatest 
+        improvement was seen in v5n6, likely because its size benefited from the extra augmentation. The general increase in F-1 scores is because TTA involves augmenting the data at 
+        the time of testing, not during training. This often helps in making the model more robust to variations that it might not have seen during training. The general increase in 
+        F-1 scores across different model variants after applying TTA indicates that this strategy helped the models better generalize to new, unseen data, thus improving both precision and recall.
+
+        <h4>Best Model after model comparison, training data aug, and TTA</h4>
+        As model YOLOv5m (after training data aug on weak letters and TTA) yields the best results, we continue our analysis with this model, comparing it to YOLOv5m that we originally trained.
+        <br><img src="images/img23.png" alt="Results for Model 5M" width="500">
+        <h5>Confusion Matrix Comparison</h5>
+        The new model performs much better on letters that old model struggles with. For example, 'A' increase from 0.8 to 1, 'B' increases from 0.89 to 1, and 'I' increases from 0.5 to 1.
+        <br>
+        Without TTA, there are more instances of misclassifications: <br>
+        1. 'I' is often confused with 'J' (50% of the time).<br>
+        2. 'M' and 'N' are confused with each other 25% of the time.<br>
+        3. 'T' is confused with 'I' 20% of the time, which was not an issue with aug + TTA.<br>
+        4. Background Class: Without aug+TTA, the 'background' class has a 50% error rate when confused with 'A' and a 14% error rate with 'Z', suggesting that the model with aug + TTA is more effective at distinguishing the absence of a sign. <br>
+        The TTA-enhanced model had more instances of perfect classification (values of 1.00 on the diagonal) compared to the model without TTA. The TTA-enhanced model had more instances of perfect classification (values of 1.00 on the diagonal) compared to the model without TTA.<br>
+        TTA seems to have helped reduce confusion between visually similar signs, as seen with fewer off-diagonal high values.<br>
+        The use of TTA appears to have positively impacted the model's ability to classify ASL letters correctly, reducing the number of misclassifications and improving the confidence of correct predictions. To further improve the model without TTA, the same recommendations previously mentioned could be employed, with added emphasis on exploring TTA as a method to enhance model robustness and accuracy.
+        <br>
+        <br><img src="images/img24.png" alt="F-1 Score Comparison" width="500"><br>
+        We observed an increase of F-1 score for all letters as seen after data augmentation and TTA has been applied to v5m. 
+        <br><img src="images/img25.png" alt="F-1 Score Comparison" width="500"><br>
+        We observed an increase of weighted F1 scores and decrease in standard deviation after data augmentation and TTA has been applied to v5m. 
+
+        <!-- <h2>Proposed Timeline</h2>
+        <p>The Gantt Chart is linked to below.</p>
+        <a href="https://docs.google.com/spreadsheets/d/1flRx9Rdf7ivgl2otrMBSPwr9i22iwpfm/edit?usp=sharing&ouid=107899665046596377928&rtpof=true&sd=true" target="_blank">Gantt Chart</a> -->
+
+        <h2>Conclusion</h2>
+        <p>In conclusion, we showed how we trained Keras Sequential CNN (image classification) and Yolov5 (object detection). Keras was able to achieve a test accuracy rate of 84% while 
+            YOLO models consistently had an accuracy of about 90%. <br> Comparing all different YOLOv5 models, without second-round data augmentation on weak letters, the best YOLO model was YOLOv5x6, 
+            but after data aug and TTA, the best model was YOLOv5m, achieving 92% weighted F-1 score on holdout test dataset. <br> Data augmentation strategies may be beneficial for small to medium models, but can become unpredictable with extra-large models.
+        </p>
+
+        <h2>Contribution Table</h2>
+        <table>
+            <tr>
+              <th>Team Member</th>
+              <th>Contribution</th>
+            </tr>
+            <tr>
+              <td>Anna Sterzer</td>
+              <td>
+                <ul>
+                    <li>Comparison and analysis between different models</li>
+                    <li>YOLOv5 versions research</li>
+                    <li>Creation of graphs for comparison</li>
+                    <li>TTA results analysis</li>
+                    <li>Edited presentation and helped to record video</li>
+                </ul>
+              </td>
+            </tr>
+            <tr>
+              <td>Srihith Pallamreddy</td>
+              <td>
+                <ul>
+                    <li>Optimize Existing Keras Sequential Model</li>
+                    <li>Implement Code for Running Object Detection Bounding Boxes through Image Classification</li>
+                    <li>Helped in Writing the Report (Parts Related to Keras Sequential)</li>
+                </ul>
+              </td>
+            </tr>
+            <tr>
+              <td>Zelda Lipschutz</td>
+              <td>
+                <ul>
+                    <li>Made slides and speaking material</li>
+                    <li>Recorded first half of video</li>
+                    <li>Editted final report</li>
+                    <li>GitHub Page Website
+                    </li>
+                </ul>
+              </td>
+            </tr>
+            <tr>
+              <td>Huaijin Tu</td>
+              <td>
+                <ul>
+                    <li>YOLOv5 training and testing to produce analyzable raw results</li>
+                    <li>YOLOv5 versions research</li>
+                    <li>YOLOv5 model comparison and selection</li>
+                    <li>YOLOv5 data augmentation, TTA implementation and testing</li>
+                </ul>
+              </td>
+            </tr>
+            <tr>
+              <td>Lan Lan</td>
+              <td>
+                <ul>
+                    <li>YOLOv5 results after data augmentation</li>
+                    <li>YOLOv5m best result analysis</li>
+                    <li>YOLOv5 versions research</li>
+                    <li>Report editing</li>
+                </ul>
+              </td>
+            </tr>
+          </table>
+
+          <!-- <h2>Checkpoints</h2> -->
+        <!-- <h4>Midterm Report Checkpoints</h4>
+        <ol>
+            <li>Dataset exploration
+                <ul>
+                    <li>Statistical insights into the distribution of the 26 ASL letters in the dataset</li>
+                    <li>Visualization of a few sample images showcasing different ASL letters with their bounding boxes by familiarizing with COCO-format annotation file and its corresponding images</li>
+                    <li>Initial observations about dataset challenges like potential class imbalances or diversity in sign poses</li>
+                    <li>Pre-processing and data augmentation (if applicable)</li>
+                </ul>
+            </li>
+            
+            <li>Initial method implementations
+                <ul>
+                    <li>Research and implement the first one or two methods (pick one from existing two-stage object detectors or one from existing one-stage object detectors, use HuggingFace library and Transfer Learning when possible)</li>
+                </ul>
+            </li>
+
+            <li>Preliminary results, including metrics like mAP, Precision, and Recall for the models tested</li>
+
+            <li>Challenges and learning
+                <ul>
+                    <li>Reflection on any computational challenges, data issues, or model convergence problems faced</li>
+                </ul>
+            </li>
+
+            <li>Summary of findings from 1 to 4 for mid-term report</li>
+
+            <li>Plan forward
+                <ul>
+                    <li>Outline the next steps, focusing on the exploration of the remaining methods and potential optimizations.</li>
+                </ul>
+            </li>
+        </ol> -->
+
+        <!-- <h4>Final Report Checkpoints</h4>
+        <ol>
+            <li>Recap of midterm progress
+                <ul>
+                    <li>A summary of the methods explored during the mid-term phase and their preliminary outcomes.</li>
+                </ul>
+            </li>
+            
+            <li>Comprehensive method implementations
+                <ul>
+                    <li>Detailed insights into both methods
+                        <ul>
+                            <li>Two-stage CNN-based detectors</li>
+                            <li>One-stage CNN-based detectors</li>
+                            <li>Fine-tuning pre-trained ViT for Object Detection</li>
+                            <li>Using CNN/ViT as a backbone with traditional ML techniques</li>
+                        </ul>
+                    </li>
+                    <li>Specific model architectures, hyperparameters, and any fine-tuning or optimization done</li>
+                    <li>Select another two models for in-depth study and implementation</li>
+                </ul>
+            </li>
+
+            <li>Results and comparative analysis
+                <ul>
+                    <li>Comprehensive metrics for all 2 implemented models including mAP, Precision, Recall, and F1-Score</li>
+                    <li>Sample images with predicted bounding boxes to visually compare the models</li>
+                    <li>Tabulated or charted comparisons of the performance of each method</li>
+                </ul>
+            </li>
+
+            <li>Discussion on method efficacy
+                <ul>
+                    <li>Observations on real-time performance, particularly latency and real-world applicability during online interactions</li>
+                </ul>
+            </li>
+
+            <li>Final report and presentation video
+                <ul>
+                    <li>Summarized findings on the best-performing methods for real-time ASL recognition</li>
+                    <li>Produced final report and presentation video summarizing ML methods, engineering technique, and findings throughout the project</li>
+                </ul>
+            </li>
+        </ol> -->
+
+        <h2>References</h2>
+        <p class="references">
+            <ol>
+              <li>Lee, David. “American Sign Language Letters Object Detection Dataset.” Roboflow, 27 July 2022, <a href="https://public.roboflow.com/object-detection/american-sign-language-letters">public.roboflow.com/object-detection/american-sign-language-letters</a>.</li>
+              <li>Fatmi, R., Rashad, S., & Integlia, R. (2019). Comparing ANN, SVM, and HMM based Machine Learning Methods for American Sign Language Recognition using Wearable Motion Sensors. 2019 IEEE 9th Annual Computing and Communication Workshop and Conference (CCWC)</li>
+              <li>Fierro-Radilla, A. N., Perez-Daniel, K. R., Benitez-Garcia, G., Garcia, P. N., & Valdez, R. F. (2021). Similarity Learning for CNN-Based ASL Alphabet Recognition.</li>
+              <li>Ren et al., 2015: "Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks"</li>
+              <li>Redmon et al., 2016: "You Only Look Once: Unified, Real-Time Object Detection"</li>
+              <li>Liu et al., 2016: "SSD: Single Shot MultiBox Detector"</li>
+              <li>Zhang et al., 2021: "ViT-YOLO:Transformer-Based YOLO for Object Detection"</li>
+            </ol>
+        </p>
+    </main>
+
+    <footer>
+        2023 Project 50 | ASL Letter Classification Project
+    </footer>
+</body>
+</html>
